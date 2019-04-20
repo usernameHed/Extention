@@ -20,6 +20,7 @@ public class ExtReflexion
     /// </summary>
     public enum AllNameAssemblyKnown
     {
+        AnimatorControllerTool,
         AnimationWindow,
         SearchWindow,
         SceneHierarchySortingWindow,
@@ -71,6 +72,29 @@ public class ExtReflexion
             }
         }
         return result.ToArray();
+    }
+
+    public static System.Type GetEditorWindowTypeByName(string editorToFind)
+    {
+        var result = new System.Collections.Generic.List<System.Type>();
+        System.Reflection.Assembly[] AS = System.AppDomain.CurrentDomain.GetAssemblies();
+        System.Type editorWindow = typeof(EditorWindow);
+        foreach (var A in AS)
+        {
+            System.Type[] types = A.GetTypes();
+            foreach (var T in types)
+            {
+                if (T.IsSubclassOf(editorWindow))
+                {
+                    if (T.Name.Equals(editorToFind))
+                    {
+                        return (T);
+                    }
+                }
+
+            }
+        }
+        return (null);
     }
 
     /// <summary>
@@ -196,9 +220,18 @@ public class ExtReflexion
     /// </summary>
     public static void SetPlayButton()
     {
+        //GetAllEditorWindowTypes(true);
+
+        /////////////////first method to get EditorWindow
+        System.Type animatorWindowType = GetEditorWindowTypeByName(ExtReflexion.AllNameAssemblyKnown.AnimatorControllerTool.ToString());
+        EditorWindow animatorWindow = EditorWindow.GetWindow(animatorWindowType);
+
+
+        ///////////////////////////second method to get EditorWindow
         //open Animation Editor Window
-        System.Type animationWindowType = null;        
+        System.Type animationWindowType = null;
         EditorWindow animationWindowEditor = ExtReflexion.ShowAndReturnEditorWindow(ExtReflexion.AllNameAssemblyKnown.AnimationWindow, ref animationWindowType);
+
 
         //Get animationWindow Type
         animationWindowType = typeof(EditorWindow).Assembly.GetType("UnityEditor.AnimationWindow");
