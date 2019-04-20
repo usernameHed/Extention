@@ -215,6 +215,30 @@ public class ExtReflexion
         return (null);
     }
 
+    /*
+    /// <summary>
+    /// from a given name, return and open/show the editorWindow
+    /// usage:
+    /// System.Type animationWindowType = null;
+    /// EditorWindow animationWindowEditor = ExtReflexion.ShowAndReturnEditorWindow(ExtReflexion.AllNameAssemblyKnown.AnimationWindow, ref animationWindowType);
+    /// </summary>
+    public static EditorWindow ShowAndReturnEditorWindow(AllNameAssemblyKnown editorWindow, ref System.Type animationWindowType)
+    {
+        System.Reflection.Assembly editorAssembly = System.Reflection.Assembly.GetAssembly(typeof(EditorWindow));
+        animationWindowType = ExtReflexion.GetTypeFromAssembly(editorWindow.ToString(), editorAssembly);
+        EditorWindow animationWindowEditor = EditorWindow.GetWindow(animationWindowType);
+
+        return (animationWindowEditor);
+    }
+    */
+
+    public static EditorWindow ShowAndReturnEditorWindow(AllNameAssemblyKnown editorWindow, ref System.Type animationWindowType)
+    {
+        animationWindowType = GetEditorWindowTypeByName(editorWindow.ToString());
+        EditorWindow animatorWindow = EditorWindow.GetWindow(animationWindowType);
+        return (animatorWindow);
+    }
+
     /// <summary>
     /// play button on animator
     /// </summary>
@@ -222,19 +246,16 @@ public class ExtReflexion
     {
         //GetAllEditorWindowTypes(true);
 
-        /////////////////first method to get EditorWindow
-        System.Type animatorWindowType = GetEditorWindowTypeByName(ExtReflexion.AllNameAssemblyKnown.AnimatorControllerTool.ToString());
-        EditorWindow animatorWindow = EditorWindow.GetWindow(animatorWindowType);
+        //open animator
+        System.Type animatorWindowType = null;
+        EditorWindow animatorWindow = ExtReflexion.ShowAndReturnEditorWindow(ExtReflexion.AllNameAssemblyKnown.AnimatorControllerTool, ref animatorWindowType);
 
-
-        ///////////////////////////second method to get EditorWindow
-        //open Animation Editor Window
+        //open animation
         System.Type animationWindowType = null;
         EditorWindow animationWindowEditor = ExtReflexion.ShowAndReturnEditorWindow(ExtReflexion.AllNameAssemblyKnown.AnimationWindow, ref animationWindowType);
 
-
         //Get animationWindow Type
-        animationWindowType = typeof(EditorWindow).Assembly.GetType("UnityEditor.AnimationWindow");
+        //animationWindowType = typeof(EditorWindow).Assembly.GetType("UnityEditor.AnimationWindow");
 
         //Get field m_AnimEditor
         FieldInfo animEditorFI = animationWindowType.GetField("m_AnimEditor", ExtReflexion.GetFullBinding());
@@ -280,21 +301,6 @@ public class ExtReflexion
     }
 
     /// <summary>
-    /// from a given name, return and open/show the editorWindow
-    /// usage:
-    /// System.Type animationWindowType = null;
-    /// EditorWindow animationWindowEditor = ExtReflexion.ShowAndReturnEditorWindow(ExtReflexion.AllNameAssemblyKnown.AnimationWindow, ref animationWindowType);
-    /// </summary>
-    public static EditorWindow ShowAndReturnEditorWindow(AllNameAssemblyKnown editorWindow, ref System.Type animationWindowType)
-    {
-        System.Reflection.Assembly editorAssembly = System.Reflection.Assembly.GetAssembly(typeof(EditorWindow));
-        animationWindowType = ExtReflexion.GetTypeFromAssembly(editorWindow.ToString(), editorAssembly);
-        EditorWindow animationWindowEditor = EditorWindow.GetWindow(animationWindowType);
-
-        return (animationWindowEditor);
-    }
-
-    /// <summary>
     /// search for an object in editor
     /// </summary>
     /// <param name="search"></param>
@@ -333,18 +339,6 @@ public class ExtReflexion
         {
             SetExpandedRecursive(go, false);
         }
-    }
-
-
-    private static EditorWindow GetFocusedWindow(string window)
-    {
-        FocusOnWindow(window);
-        return EditorWindow.focusedWindow;
-    }
-
-    private static void FocusOnWindow(string window)
-    {
-        EditorApplication.ExecuteMenuItem("Window/" + window);
     }
 
     /// <summary>

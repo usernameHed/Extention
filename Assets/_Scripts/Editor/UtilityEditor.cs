@@ -47,16 +47,7 @@ public class UtilityEditor : ScriptableObject
 
         return (default(T));
     }
-
-    public static void FocusOnSelection(GameObject objToFocus, float zoom = 5f)
-    {
-        SceneView.lastActiveSceneView.LookAt(objToFocus.transform.position);
-        if (zoom != -1)
-        {
-            SceneViewCameraFunction.ViewportPanZoomIn(zoom);
-        }            
-    }
-
+    
     [MenuItem("PERSO/Ext/CreateEmptyParent #e")]
     public static void CreateEmptyParent()
     {
