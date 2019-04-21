@@ -1,15 +1,5 @@
 ﻿using System;
 
-/* *****************************************************************************
- * File:    DateTimeExtensions.cs
- * Author:  Philip Pierce - Wednesday, September 10, 2014
- * Description:
- *  Extensions for DateTime
- *  
- * History:
- *  Wednesday, September 10, 2014 - Created
- * ****************************************************************************/
-
 /// <summary>
 /// Extensions for DateTime
 /// </summary>
@@ -22,6 +12,17 @@ public static class ExtDateTime
     public static string GetDateNow()
     {
         return System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+    }
+
+    public static string ConvertSeconds(int time)
+    {
+        var _minutes = (int)(time / 60);
+        string minutes = "";
+        int _seconds = (time % 60);
+        string seconds = "";
+        if (_minutes > 0) minutes = _minutes + " minute" + (_minutes > 1 ? "s " : " ");
+        if (_seconds > 0) seconds = _seconds + " second" + (_seconds > 1 ? "s " : " ");
+        return (minutes + seconds).Substring(0, (minutes + seconds).Length - 1);
     }
 
     #region Constants

@@ -7,6 +7,36 @@ using UnityEngine;
 public static class ExtTransform
 {
     /// <summary>
+    /// opposite of up
+    /// </summary>
+    /// <param name="t"></param>
+    /// <returns></returns>
+    public static Vector3 Down(this Transform t)
+    {
+        return -t.up;
+    }
+
+    /// <summary>
+    /// opposite of right
+    /// </summary>
+    /// <param name="t"></param>
+    /// <returns></returns>
+    public static Vector3 Left(this Transform t)
+    {
+        return -t.right;
+    }
+
+    /// <summary>
+    /// opposite of forward
+    /// </summary>
+    /// <param name="t"></param>
+    /// <returns></returns>
+    public static Vector3 Backward(this Transform t)
+    {
+        return -t.forward;
+    }
+
+    /// <summary>
     /// get real pos world of rect transform
     /// </summary>
     public static Rect GetWorldRect(RectTransform rt, Vector2 scale)

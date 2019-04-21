@@ -6,6 +6,22 @@ using UnityEngine;
 public static class ExtList
 {
     /// <summary>
+    /// is this list contain a string (nice for enum test)
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="tag"></param>
+    /// <param name="listEnum"></param>
+    /// <returns></returns>
+    public static bool ListContain<T>(string tag, List<T> listEnum)
+    {
+        for (int i = 0; i < listEnum.Count; i++)
+        {
+            if (String.Equals(listEnum[i].ToString(), tag))
+                return (true);
+        }
+        return (false);
+    }
+    /// <summary>
     /// renvoi vrai si dans la liste, il y a un mot qui est substring du fileName
     /// </summary>
     /// <param name="toTransform"></param>
@@ -83,6 +99,11 @@ public static class ExtList
         }
     }
 
+    public static void Shuffle<T>(this List<T> list)
+    {
+        list.Sort((a, b) => 1 - 2 * UnityEngine.Random.Range(0, 1));
+    }
+
     /// <summary>
     /// Return a random item from the list.
     /// Sampling with replacement.
@@ -110,5 +131,58 @@ public static class ExtList
         T item = list[index];
         list.RemoveAt(index);
         return item;
+    }
+
+    /// <summary>
+    /// Returns true if the array is null or empty
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    public static bool IsNullOrEmpty<T>(this T[] data)
+    {
+        return ((data == null) || (data.Length == 0));
+    }
+
+    /// <summary>
+    /// Returns true if the list is null or empty
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    public static bool IsNullOrEmpty<T>(this List<T> data)
+    {
+        return ((data == null) || (data.Count == 0));
+    }
+
+    /// <summary>
+    /// Returns true if the dictionary is null or empty
+    /// </summary>
+    /// <typeparam name="T1"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    public static bool IsNullOrEmpty<T1, T2>(this Dictionary<T1, T2> data)
+    {
+        return ((data == null) || (data.Count == 0));
+    }
+
+    /// <summary>
+    /// deques an item, or returns null
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="q"></param>
+    /// <returns></returns>
+    public static T DequeueOrNull<T>(this Queue<T> q)
+    {
+        try
+        {
+            return (q.Count > 0) ? q.Dequeue() : default(T);
+        }
+
+        catch (Exception)
+        {
+            return default(T);
+        }
     }
 }

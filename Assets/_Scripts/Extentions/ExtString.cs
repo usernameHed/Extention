@@ -2,6 +2,7 @@ using System;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Text;
+using System.Linq;
 
 public static class ExtString
 {
@@ -16,91 +17,206 @@ public static class ExtString
         if (string.IsNullOrEmpty(value)) return value;
         return value.Length <= maxLength ? value : value.Substring(0, maxLength);
     }
-    
-    // Named format strings from object attributes. Eg:
-    // string blaStr = aPerson.ToString("My name is {FirstName} {LastName}.")
-    // From: http://www.hanselman.com/blog/CommentView.aspx?guid=fde45b51-9d12-46fd-b877-da6172fe1791
-    public static string ToString(this object anObject, string aFormat)
+
+    /// <summary>
+    /// Returns true if value is an int
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static bool IsInt(this string value)
     {
-        return ToString(anObject, aFormat, null);
+        try
+        {
+            int tempInt;
+            return int.TryParse(value, out tempInt);
+        }
+
+        catch (Exception)
+        {
+            return false;
+        }
     }
 
-    public static string ToString(this object anObject, string aFormat, IFormatProvider formatProvider)
+    /// <summary>
+    /// Like LINQ take - takes the first x characters
+    /// </summary>
+    /// <param name="value">the string</param>
+    /// <param name="count">number of characters to take</param>
+    /// <param name="ellipsis">true to add ellipsis (...) at the end of the string</param>
+    /// <returns></returns>
+    public static string Take(this string value, int count, bool ellipsis = false)
     {
-        StringBuilder sb = new StringBuilder();
-        Type type = anObject.GetType();
-        Regex reg = new Regex(@"({)([^}]+)(})", RegexOptions.IgnoreCase);
-        MatchCollection mc = reg.Matches(aFormat);
-        int startIndex = 0;
-        foreach (Match m in mc)
-        {
-            Group g = m.Groups[2]; //it's second in the match between { and }
-            int length = g.Index - startIndex - 1;
-            sb.Append(aFormat.Substring(startIndex, length));
+        // get number of characters we can actually take
+        int lengthToTake = Math.Min(count, value.Length);
 
-            string toGet = string.Empty;
-            string toFormat = string.Empty;
-            int formatIndex = g.Value.IndexOf(":"); //formatting would be to the right of a :
-            if (formatIndex == -1) //no formatting, no worries
-            {
-                toGet = g.Value;
-            }
-            else //pickup the formatting
-            {
-                toGet = g.Value.Substring(0, formatIndex);
-                toFormat = g.Value.Substring(formatIndex + 1);
-            }
-
-            //first try properties
-            PropertyInfo retrievedProperty = type.GetProperty(toGet);
-            Type retrievedType = null;
-            object retrievedObject = null;
-            if (retrievedProperty != null)
-            {
-                retrievedType = retrievedProperty.PropertyType;
-                retrievedObject = retrievedProperty.GetValue(anObject, null);
-            }
-            else //try fields
-            {
-                FieldInfo retrievedField = type.GetField(toGet);
-                if (retrievedField != null)
-                {
-                    retrievedType = retrievedField.FieldType;
-                    retrievedObject = retrievedField.GetValue(anObject);
-                }
-            }
-
-            if (retrievedType != null) //Cool, we found something
-            {
-                string result = string.Empty;
-                if (toFormat == string.Empty) //no format info
-                {
-                    result = retrievedType.InvokeMember("ToString",
-                        BindingFlags.Public | BindingFlags.NonPublic |
-                        BindingFlags.Instance | BindingFlags.InvokeMethod | BindingFlags.IgnoreCase
-                        , null, retrievedObject, null) as string;
-                }
-                else //format info
-                {
-                    result = retrievedType.InvokeMember("ToString",
-                        BindingFlags.Public | BindingFlags.NonPublic |
-                        BindingFlags.Instance | BindingFlags.InvokeMethod | BindingFlags.IgnoreCase
-                        , null, retrievedObject, new object[] { toFormat, formatProvider }) as string;
-                }
-                sb.Append(result);
-            }
-            else //didn't find a property with that name, so be gracious and put it back
-            {
-                sb.Append("{");
-                sb.Append(g.Value);
-                sb.Append("}");
-            }
-            startIndex = g.Index + g.Length + 1;
-        }
-        if (startIndex < aFormat.Length) //include the rest (end) of the string
-        {
-            sb.Append(aFormat.Substring(startIndex));
-        }
-        return sb.ToString();
+        // Take and return
+        return (ellipsis && lengthToTake < value.Length) ?
+            string.Format("{0}...", value.Substring(0, lengthToTake)) :
+            value.Substring(0, lengthToTake);
     }
+
+    /// <summary>
+    /// like LINQ skip - skips the first x characters and returns the remaining string
+    /// </summary>
+    /// <param name="value">the string</param>
+    /// <param name="count">number of characters to skip</param>
+    /// <returns></returns>
+    public static string Skip(this string value, int count)
+    {
+        return value.Substring(Math.Min(count, value.Length) - 1);
+    }
+
+    /// <summary>
+    /// Reverses the string
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    public static string Reverse(this string input)
+    {
+        char[] chars = input.ToCharArray();
+        Array.Reverse(chars);
+        return new String(chars);
+    }
+
+    /// <summary>
+    /// Null or empty check as extension
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static bool IsNullOrEmpty(this string value)
+    {
+        return string.IsNullOrEmpty(value);
+    }
+
+    /// <summary>
+    /// ditches html tags - note it doesn't get rid of things like nbsp;
+    /// </summary>
+    /// <param name="html"></param>
+    /// <returns></returns>
+    public static string StripHtml(this string html)
+    {
+        if (html.IsNullOrEmpty())
+            return string.Empty;
+
+        return Regex.Replace(html, @"<[^>]*>", string.Empty);
+    }
+
+    /// <summary>
+    /// Returns true if the pattern matches
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="pattern"></param>
+    /// <returns></returns>
+    public static bool Match(this string value, string pattern)
+    {
+        return Regex.IsMatch(value, pattern);
+    }
+
+    /// <summary>
+    /// Remove white space, not line end
+    /// Useful when parsing user input such phone,
+    /// price int.Parse("1 000 000".RemoveSpaces(),.....
+    /// </summary>
+    /// <param name="value"></param>
+    public static string RemoveSpaces(this string value)
+    {
+        return value.Replace(" ", string.Empty);
+    }
+
+    /// <summary>
+    /// Replaces line endings (\r \n) with &lt;br /&gt;
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static string ReplaceRNWithBr(this string value)
+    {
+        return value.Replace("\r\n", "<br />").Replace("\n", "<br />");
+    }
+
+
+    /// <summary>
+    /// Converts a null or "" to string.empty. Useful for XML code. Does nothing if <paramref name="value"/> already has a value
+    /// </summary>
+    /// <param name="value">string to convert</param>
+    public static string ToEmptyString(string value)
+    {
+        return (string.IsNullOrEmpty(value)) ? string.Empty : value;
+    }
+
+    /// <summary>
+    /// Inverts the case of each character in the given string and returns the new string.
+    /// </summary>
+    /// <param name="s">The given string.</param>
+    /// <returns>The converted string.</returns>
+    public static string InvertCase(this string s)
+    {
+        return new string(
+            s.Select(c => char.IsLetter(c) ? (char.IsUpper(c) ?
+                  char.ToLower(c) : char.ToUpper(c)) : c).ToArray());
+    }
+
+    /// <summary>
+    /// Checks whether the given string is null, else if empty after trimmed.
+    /// </summary>
+    /// <param name="s">The given string.</param>
+    /// <returns>True if string is Null or Empty, false otherwise.</returns>
+    public static bool IsNullOrEmptyAfterTrimmed(this string s)
+    {
+        return (s.IsNullOrEmpty() || s.Trim().IsNullOrEmpty());
+    }
+
+    /// <summary>
+    /// Extracts the substring starting from 'start' position to 'end' position.
+    /// </summary>
+    /// <param name="s">The given string.</param>
+    /// <param name="start">The start position.</param>
+    /// <param name="end">The end position.</param>
+    /// <returns>The substring.</returns>
+    public static string SubstringFromXToY(this string s, int start, int end)
+    {
+        if (s.IsNullOrEmpty())
+            return string.Empty;
+
+        // if start is past the length of the string
+        if (start >= s.Length)
+            return string.Empty;
+
+        // if end is beyond the length of the string, reset
+        if (end >= s.Length)
+            end = s.Length - 1;
+
+        return s.Substring(start, end - start);
+    }
+
+    /// <summary>
+    /// Returns the number of words in the given string.
+    /// </summary>
+    /// <param name="s">The given string.</param>
+    /// <returns>The word count.</returns>
+    public static int GetWordCount(this string s)
+    {
+        return (new Regex(@"\w+")).Matches(s).Count;
+    }
+
+    /// <summary>
+    /// Checks whether the given string is a palindrome.
+    /// </summary>
+    /// <param name="s">The given string.</param>
+    /// <returns>True if the given string is palindrome, false otherwise.</returns>
+    public static bool IsPalindrome(this string s)
+    {
+        return s.Equals(s.Reverse());
+    }
+
+    /// <summary>
+    /// Checks whether the given string is a valid IP address using regular expressions.
+    /// </summary>
+    /// <param name="s">The given string.</param>
+    /// <returns>True if it is a valid IP address, false otherwise.</returns>
+    public static bool IsValidIPAddress(this string s)
+    {
+        return Regex.IsMatch(s, @"\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b");
+    }
+
+
 }

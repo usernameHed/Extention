@@ -1,15 +1,5 @@
 ﻿using System;
 
-/* *****************************************************************************
- * File:    ConversionExtensions.cs
- * Author:  Philip Pierce - Thursday, September 18, 2014
- * Description:
- *  Extensions for converting one data type to another
- *  
- * History:
- *  Thursday, September 18, 2014 - Created
- * ****************************************************************************/
-
 /// <summary>
 /// Extensions for converting one data type to another
 /// </summary>

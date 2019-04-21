@@ -7,6 +7,24 @@ using System;
 public static class ExtGameObject
 {
     /// <summary>
+    /// Find a GameObject even if it's disabled.
+    /// </summary>
+    /// <param name="name">The name.</param>
+    public static GameObject FindWithDisabled(this GameObject go, string name)
+    {
+        var temp = Resources.FindObjectsOfTypeAll(typeof(GameObject)) as GameObject[];
+        var obj = new GameObject();
+        foreach (GameObject o in temp)
+        {
+            if (o.name == name)
+            {
+                obj = o;
+            }
+        }
+        return obj;
+    }
+
+    /// <summary>
     /// create a gameObject, with a set of components
     /// ExtGameObject.CreateGameObject("game object name", Vector3.zero, Quaternion.identity, Vector3 Vector.One, Component [] components, Transform parent)
     /// </summary>
@@ -122,6 +140,17 @@ public static class ExtGameObject
             mask |= (Physics.GetIgnoreLayerCollision(layer, i) ? 0 : 1) << i;
 
         return mask;
+    }
+
+    /// <summary>
+    /// is the object's layer in the specified layermask
+    /// </summary>
+    /// <param name="gameObject"></param>
+    /// <param name="mask"></param>
+    /// <returns></returns>
+    public static bool IsInLayerMask(this GameObject gameObject, LayerMask mask)
+    {
+        return ((mask.value & (1 << gameObject.layer)) > 0);
     }
 
     /// <summary>
