@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
-public class ExtTexture : MonoBehaviour
+public static class ExtTexture
 {
     /// <summary>
     /// Saves a texture to PNG.
