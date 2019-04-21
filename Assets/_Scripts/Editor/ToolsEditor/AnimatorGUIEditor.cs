@@ -9,6 +9,9 @@ public class AnimatorGUIEditor : Editor
 {
     AnimatorGUI animatorGUI;
 
+    /// <summary>
+    /// just display a clickable green sphere
+    /// </summary>
     private void OnSceneGUI()
     {
         animatorGUI = (AnimatorGUI)target;

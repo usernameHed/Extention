@@ -4,18 +4,9 @@ using TMPro;
 
 public class UtilityEditor : ScriptableObject
 {
-    public const int FILTERMODE_ALL = 0;
-    public const int FILTERMODE_NAME = 1;
-    public const int FILTERMODE_TYPE = 2;
-
-    private static string SaveAsset(string nameMesh, string extention = "asset")
-    {
-        return string.Format("{0}_{1}.{2}",
-                            nameMesh,
-                             System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"),
-                             extention);
-    }
-
+    /// <summary>
+    /// save the MeshFilter of the selected object in Assets/Resources/Procedural/
+    /// </summary>
     [MenuItem("PERSO/Procedural/Save Selected Mesh")]
     public static void SaveSelectedMesh()
 	{
@@ -32,6 +23,13 @@ public class UtilityEditor : ScriptableObject
         AssetDatabase.CreateAsset(tempMesh, path);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
+    }
+    private static string SaveAsset(string nameMesh, string extention = "asset")
+    {
+        return string.Format("{0}_{1}.{2}",
+                            nameMesh,
+                             System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"),
+                             extention);
     }
 
     public static T GetScript<T>()

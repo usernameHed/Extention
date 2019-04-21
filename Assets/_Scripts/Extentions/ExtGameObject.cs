@@ -68,64 +68,6 @@ public static class ExtGameObject
         return ((go != null) && (go.activeSelf));
     }
 
-    #region GetInterfaces
-    /// <summary>
-    /// Returns the interface on this game object
-    /// </summary>
-    public static T GetInterface<T>(this GameObject go) where T : class
-    {
-
-        if (!typeof(T).IsInterface)
-        {
-            Debug.LogError(typeof(T).ToString() + " is not an interface");
-            return null;
-        }
-
-        return go.GetComponents<Component>().OfType<T>().FirstOrDefault();
-    }
-    /// <summary>
-    /// Returns the first matching interface on this game object's children
-    /// </summary>
-    public static T GetInterfaceInChildren<T>(this GameObject go) where T : class
-    {
-
-        if (!typeof(T).IsInterface)
-        {
-            Debug.LogError(typeof(T).ToString() + " is not an interface");
-            return null;
-        }
-
-        return go.GetComponentsInChildren<Component>().OfType<T>().FirstOrDefault();
-    }
-    /// <summary>
-    /// Returns all interfaces on this game object matching this type
-    /// </summary>
-    public static IEnumerable<T> GetInterfaces<T>(this GameObject go) where T : class
-    {
-
-        if (!typeof(T).IsInterface)
-        {
-            Debug.LogError(typeof(T).ToString() + " is not an interface");
-            return Enumerable.Empty<T>();
-        }
-
-        return go.GetComponents<Component>().OfType<T>();
-    }
-    /// <summary>
-    /// Returns all matching interfaces on this game object's children
-    /// </summary>
-    public static IEnumerable<T> GetInterfacesInChildren<T>(this GameObject go) where T : class
-    {
-        if (!typeof(T).IsInterface)
-        {
-            Debug.LogError(typeof(T).ToString() + " is not an interface");
-            return Enumerable.Empty<T>();
-        }
-
-        return go.GetComponentsInChildren<Component>(true).OfType<T>();
-    }
-    #endregion
-
 
     /// <summary>
     /// change le layer de TOUT les enfants
@@ -151,18 +93,6 @@ public static class ExtGameObject
         {
             collider.enabled = tf;
         }            
-    }
-    /// <summary>
-    /// activate recursivly the Visual (render);
-    /// use: gameObject.SetVisualRecursively(false);
-    /// </summary>
-    public static void SetVisualRecursively(this GameObject gameObject, bool tf)
-    {
-        Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
-        foreach (Renderer renderer in renderers)
-        {
-            renderer.enabled = tf;
-        }
     }
 
     /// <summary>
@@ -195,10 +125,17 @@ public static class ExtGameObject
     }
 
     /// <summary>
-    /// renvoi si le joueur est grounded ou pas
+    /// Is a gameObject grounded or not ?
     /// </summary>
-    public static bool IsGrounded(GameObject target, float distToGround, float marginDistToGround = 0.1f)
+    /// <param name="target">object to test for grounded</param>
+    /// <param name="dirUp">normal up of the object</param>
+    /// <param name="distToGround">dist to test</param>
+    /// <param name="layerMask">layermask</param>
+    /// <param name="queryTriggerInteraction"></param>
+    /// <param name="marginDistToGround">aditionnal margin to the distance</param>
+    /// <returns></returns>
+    public static bool IsGrounded(GameObject target, Vector3 dirUp, float distToGround, int layerMask, QueryTriggerInteraction queryTriggerInteraction, float marginDistToGround = 0.1f)
     {
-        return Physics.Raycast(target.transform.position, -Vector3.up, distToGround + marginDistToGround);
+        return Physics.Raycast(target.transform.position, -dirUp, distToGround + marginDistToGround, layerMask, queryTriggerInteraction);
     }
 }

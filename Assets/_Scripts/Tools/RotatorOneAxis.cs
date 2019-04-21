@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// rotation only on one axis
+/// show rotation only on one axis
 /// </summary>
 public class RotatorOneAxis : MonoBehaviour
 {

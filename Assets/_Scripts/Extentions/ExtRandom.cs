@@ -93,6 +93,15 @@ public static class ExtRandom
     }
 
     /// <summary>
+    /// get a random color
+    /// </summary>
+    /// <returns></returns>
+    public static Color GetRandomColor()
+    {
+        Color randomColor = new Color(UnityEngine.Random.Range(0.0f, 1.0f), UnityEngine.Random.Range(0.0f, 1.0f), UnityEngine.Random.Range(0.0f, 1.0f), 1);
+        return (randomColor);
+    }
+    /// <summary>
     /// get a random color, with alpha 1
     /// </summary>
     /// <returns></returns>

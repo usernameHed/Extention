@@ -13,7 +13,7 @@
 /// <summary>
 /// Extensions for converting one data type to another
 /// </summary>
-public static class ConversionExtensions
+public static class ExtConverstion
 {
     #region IntTo
 
